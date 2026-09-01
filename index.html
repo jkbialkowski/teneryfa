@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Teneryfa 3–10 września · gdzie jesteśmy</title>
+<meta name="description" content="Nasz plan wyjazdu na Teneryfę. Zobacz, co robimy w tej chwili.">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#16211D">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#16211D;
+  --ink-soft:#55655E;
+  --ink-faint:#8A9A93;
+  --paper:#FFFFFF;
+  --mist:#F0F3F0;
+  --line:#E2E8E3;
+  --sea:#0E6B78;
+  --sea-soft:#E4F0F1;
+  --lava:#C7522A;
+  --sand:#F8F2E8;
+  --r-lg:18px;
+  --r-md:12px;
+  --r-sm:8px;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0;
+  background:var(--mist);
+  color:var(--ink);
+  font-family:'Figtree',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+  font-size:17px;
+  line-height:1.5;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:560px;margin:0 auto;background:var(--mist);min-height:100vh}
+:focus-visible{outline:3px solid var(--sea);outline-offset:2px;border-radius:4px}
+
+/* ---------- STICKY STATUS ---------- */
+.now{
+  position:sticky;top:0;z-index:50;
+  background:var(--ink);color:#fff;
+  padding:calc(14px + env(safe-area-inset-top)) 18px 15px;
+  box-shadow:0 6px 24px rgba(22,33,29,.18);
+}
+.now-top{display:flex;align-items:center;gap:8px;margin-bottom:9px}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--lava);flex:none;position:relative}
+.dot::after{content:'';position:absolute;inset:-5px;border-radius:50%;border:2px solid var(--lava);opacity:.6;animation:pulse 2.4s ease-out infinite}
+@keyframes pulse{0%{transform:scale(.55);opacity:.75}70%{transform:scale(1.25);opacity:0}100%{opacity:0}}
+.now-label{font-size:13px;font-weight:600;letter-spacing:.01em;color:#B7C7C0}
+.now-status{font-size:24px;font-weight:800;line-height:1.2;letter-spacing:-.02em;margin:0 0 3px}
+.now-sub{font-size:14.5px;color:#AFC0B9;margin:0}
+.now-sub b{color:#fff;font-weight:600}
+.bar{height:4px;border-radius:99px;background:rgba(255,255,255,.16);margin:13px 0 11px;overflow:hidden}
+.bar span{display:block;height:100%;background:var(--lava);border-radius:99px;transition:width .6s ease}
+.clocks{display:flex;gap:18px;font-size:13.5px;color:#8FA49C;font-variant-numeric:tabular-nums}
+.clocks b{color:#fff;font-weight:700;font-size:15px}
+.clocks div{display:flex;align-items:baseline;gap:6px}
+
+/* ---------- DAY CHIPS ---------- */
+.days{
+  position:sticky;top:var(--now-h,150px);z-index:40;
+  background:var(--paper);border-bottom:1px solid var(--line);
+  display:flex;gap:8px;overflow-x:auto;padding:11px 14px;
+  scrollbar-width:none;-webkit-overflow-scrolling:touch;
+}
+.days::-webkit-scrollbar{display:none}
+.chip{
+  flex:none;border:1px solid var(--line);background:var(--paper);
+  border-radius:99px;padding:8px 15px;font:inherit;font-size:14.5px;font-weight:600;
+  color:var(--ink-soft);cursor:pointer;white-space:nowrap;min-height:42px;
+  display:flex;flex-direction:column;justify-content:center;line-height:1.15;
+}
+.chip small{display:block;font-size:11.5px;font-weight:500;color:var(--ink-faint)}
+.chip[aria-selected="true"]{background:var(--ink);border-color:var(--ink);color:#fff}
+.chip[aria-selected="true"] small{color:#9DB0A8}
+.chip.is-today::before{content:'';width:6px;height:6px;background:var(--lava);border-radius:50%;position:absolute;margin:-14px 0 0 -8px}
+.chip{position:relative}
+
+/* ---------- MAP ---------- */
+.mapcard{background:var(--paper);padding:16px 18px 14px;border-bottom:1px solid var(--line)}
+.mapcard h2{margin:0 0 2px;font-size:15px;font-weight:700}
+.mapcard p{margin:0 0 10px;font-size:13.5px;color:var(--ink-soft)}
+svg.island{width:100%;height:auto;display:block;max-height:230px}
+.coast{fill:#EAF0EC;stroke:#CFDCD3;stroke-width:1.5;stroke-linejoin:round}
+.pinlabel{font-size:10.5px;font-weight:600;fill:var(--ink-faint)}
+.here circle.halo{fill:var(--lava);opacity:.22}
+.here circle.core{fill:var(--lava);stroke:#fff;stroke-width:2.5}
+.herelabel{font-size:12px;font-weight:800;fill:var(--ink)}
+
+/* ---------- DAY HEADER ---------- */
+.dayhead{padding:22px 18px 6px}
+.dayhead h1{margin:0;font-size:26px;font-weight:800;letter-spacing:-.025em;line-height:1.15}
+.dayhead p{margin:5px 0 0;color:var(--ink-soft);font-size:15px}
+.legend{
+  margin:14px 18px 0;padding:10px 13px;background:var(--sea-soft);
+  border-radius:var(--r-md);font-size:13.5px;color:#0B4C55;display:flex;gap:9px;align-items:flex-start
+}
+.legend svg{flex:none;margin-top:2px}
+
+/* ---------- TIMELINE ---------- */
+.list{padding:14px 14px 40px;display:flex;flex-direction:column;gap:9px}
+.item{background:var(--paper);border-radius:var(--r-lg);border:1px solid var(--line);overflow:hidden}
+.item.current{border-color:var(--lava);box-shadow:0 3px 16px rgba(199,82,42,.14)}
+.item.past{opacity:.62}
+.item.night{background:transparent;border-style:dashed;box-shadow:none}
+.row{width:100%;display:flex;gap:13px;align-items:flex-start;padding:14px 15px;background:none;border:0;font:inherit;color:inherit;text-align:left;min-height:56px}
+button.row{cursor:pointer;width:100%}
+.time{flex:none;width:52px;font-size:15px;font-weight:700;font-variant-numeric:tabular-nums;padding-top:1px}
+.time small{display:block;font-size:11px;font-weight:600;color:var(--ink-faint);letter-spacing:.01em}
+.body{flex:1;min-width:0}
+.title{font-size:17px;font-weight:600;line-height:1.35;margin:0}
+.meta{margin:3px 0 0;font-size:14px;color:var(--ink-soft)}
+.badge{display:inline-block;background:var(--lava);color:#fff;font-size:11.5px;font-weight:700;padding:2px 8px;border-radius:99px;margin-left:7px;vertical-align:2px}
+.tap{
+  display:inline-flex;align-items:center;gap:6px;margin-top:9px;
+  background:var(--sea-soft);color:#0B4C55;font-size:13px;font-weight:700;
+  padding:5px 11px 5px 9px;border-radius:99px;
+}
+.tap svg{transition:transform .25s ease}
+button.row[aria-expanded="true"] .tap svg{transform:rotate(180deg)}
+.detail{padding:0 15px 16px 80px;font-size:15.5px;color:var(--ink-soft);line-height:1.6}
+.detail>*:first-child{margin-top:0}
+.detail p{margin:0 0 11px}
+.detail strong{color:var(--ink);font-weight:600}
+.facts{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}
+.facts li{padding-left:16px;position:relative}
+.facts li::before{content:'';position:absolute;left:0;top:9px;width:6px;height:6px;border-radius:50%;background:var(--sea)}
+.note{background:var(--sand);border-radius:var(--r-md);padding:11px 13px;margin:12px 0 0;font-size:14.5px;color:#6B4A2E}
+
+/* ---------- FOOTER ---------- */
+.info{margin:0 14px 30px;background:var(--paper);border:1px solid var(--line);border-radius:var(--r-lg);padding:18px}
+.info h2{margin:0 0 12px;font-size:18px;font-weight:800;letter-spacing:-.02em}
+.info dl{margin:0;display:grid;grid-template-columns:auto 1fr;gap:9px 14px;font-size:15px}
+.info dt{color:var(--ink-faint);font-weight:600;font-size:13.5px;padding-top:2px}
+.info dd{margin:0}
+.info a{color:var(--sea);font-weight:600}
+.sig{text-align:center;padding:0 18px 40px;font-size:13.5px;color:var(--ink-faint)}
+
+.jump{
+  position:fixed;left:50%;transform:translateX(-50%);bottom:calc(18px + env(safe-area-inset-bottom));
+  z-index:60;background:var(--ink);color:#fff;border:0;border-radius:99px;
+  padding:13px 20px;font:inherit;font-size:15px;font-weight:700;cursor:pointer;
+  box-shadow:0 8px 24px rgba(22,33,29,.3);display:none;align-items:center;gap:8px
+}
+.jump.show{display:flex}
+
+@media (prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important;scroll-behavior:auto!important}
+}
+@media (min-width:600px){
+  .now{border-radius:0 0 20px 20px}
+  body{font-size:17.5px}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="now" id="now">
+    <div class="now-top">
+      <span class="dot" aria-hidden="true"></span>
+      <span class="now-label" id="nowLabel">Teraz</span>
+    </div>
+    <p class="now-status" id="nowStatus">Wczytuję…</p>
+    <p class="now-sub" id="nowSub"></p>
+    <div class="bar" aria-hidden="true"><span id="nowBar" style="width:0"></span></div>
+    <div class="clocks">
+      <div>Teneryfa <b id="clockTF">—</b></div>
+      <div>Polska <b id="clockPL">—</b></div>
+    </div>
+  </header>
+
+  <nav class="days" id="days" aria-label="Dni wyjazdu"></nav>
+
+  <section class="mapcard" aria-labelledby="mapTitle">
+    <h2 id="mapTitle">Gdzie jesteśmy</h2>
+    <p id="mapCaption">—</p>
+    <svg class="island" id="island" viewBox="0 0 340 283" role="img" aria-labelledby="mapTitle"></svg>
+  </section>
+
+  <div class="dayhead">
+    <h1 id="dayTitle">—</h1>
+    <p id="daySub">—</p>
+  </div>
+
+  <div class="legend">
+    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#0B4C55" stroke-width="2.2" stroke-linecap="round"><path d="M12 17v-5"/><path d="M12 8h.01"/><circle cx="12" cy="12" r="9"/></svg>
+    <span>Punkty z zieloną etykietą można kliknąć — rozwiną się ciekawostki i szczegóły.</span>
+  </div>
+
+  <main class="list" id="list"></main>
+
+  <section class="info">
+    <h2>Gdyby coś</h2>
+    <dl>
+      <dt>Hotel</dt>
+      <dd>Barceló Santiago – Adults Only<br>Puerto de Santiago (Los Gigantes), Teneryfa</dd>
+      <dt>Rezydent Itaki</dt>
+      <dd>numer podamy po przylocie</dd>
+      <dt>Nasze numery</dt>
+      <dd>te same co zwykle — na Kanarach działają bez dopłat, to Unia</dd>
+      <dt>Alarmowy</dt>
+      <dd><a href="tel:112">112</a> — działa w całej Hiszpanii</dd>
+      <dt>Różnica czasu</dt>
+      <dd>Na Teneryfie jest godzinę wcześniej niż w Polsce</dd>
+    </dl>
+  </section>
+
+  <p class="sig">Plan może się trochę zmienić — piszemy, gdyby coś.</p>
+</div>
+
+<button class="jump" id="jump" type="button">
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+  Wróć do teraz
+</button>
+
+<script>
+/* ============ DANE ============ */
+const PLACES = {
+  dom:        null,
+  lotniskoPL: null,
+  samolot:    null,
+  tfs:        {lat:28.045, lon:-16.572, name:'Lotnisko Teneryfa Południe'},
+  hotel:      {lat:28.238, lon:-16.840, name:'Hotel w Los Gigantes'},
+  arena:      {lat:28.223, lon:-16.845, name:'Playa de la Arena'},
+  santiago:   {lat:28.296, lon:-16.816, name:'Santiago del Teide'},
+  masca:      {lat:28.305, lon:-16.840, name:'Wioska Masca'},
+  wawoz:      {lat:28.287, lon:-16.855, name:'Wąwóz Masca'},
+  zatoka:     {lat:28.271, lon:-16.868, name:'Zatoka Masca'},
+  morze:      {lat:28.255, lon:-16.865, name:'Klify Los Gigantes'},
+  laguna:     {lat:28.487, lon:-16.315, name:'La Laguna'},
+  anaga:      {lat:28.529, lon:-16.290, name:'Góry Anaga'},
+  taborno:    {lat:28.545, lon:-16.281, name:'Taborno'},
+  teresitas:  {lat:28.505, lon:-16.185, name:'Playa de las Teresitas'},
+  samara:     {lat:28.276, lon:-16.712, name:'Mirador de Samara'},
+  roques:     {lat:28.225, lon:-16.630, name:'Roques de García'}
+};
+
+const DAYS = [
+  {
+    key:'d1', label:'czw', num:'3.09', title:'Lecimy na Teneryfę',
+    sub:'Dzień w podróży. Wieczorem powinniśmy być w hotelu.',
+    items:[
+      {t:'04:30', tz:'pl', at:'2026-09-03T04:30+02:00', title:'Wyjeżdżamy z domu', status:'Jedziemy na lotnisko', place:'dom',
+       detail:`<p>Na parking pod lotniskiem mamy około <strong>1 godziny 20 minut</strong> drogi. Zostawiamy tam auto na cały wyjazd, a busik podwozi nas pod terminal.</p>`},
+      {t:'06:20', tz:'pl', at:'2026-09-03T06:20+02:00', title:'Odprawa bagażowa na lotnisku', status:'Odprawiamy się na lotnisku', place:'lotniskoPL'},
+      {t:'07:55', tz:'pl', at:'2026-09-03T07:55+02:00', title:'Zamknięcie bramek', status:'Czekamy przy bramce', place:'lotniskoPL'},
+      {t:'08:40', tz:'pl', at:'2026-09-03T08:40+02:00', title:'Wylot z Warszawy', status:'Lecimy nad Atlantykiem', place:'samolot',
+       detail:`<p>Rejs <strong>ENT5601</strong>, w powietrzu jesteśmy jakieś sześć i pół godziny. Zasięgu w tym czasie oczywiście nie mamy.</p>
+       <ul class="facts"><li>Teneryfa leży na wysokości Sahary — bliżej jej do Afryki niż do Hiszpanii. Z wyspy do Maroka jest około 300 km, do Madrytu ponad 1700.</li></ul>`},
+      {t:'14:10', tz:'tf', at:'2026-09-03T14:10+01:00', title:'Lądujemy na Teneryfie', status:'Wylądowaliśmy, szukamy transferu', place:'tfs',
+       detail:`<p>Lotnisko Tenerife Sur, imienia królowej Zofii. Na miejscu szukamy osoby z tabliczką Itaki i wsiadamy do autokaru.</p>
+       <p class="note">To już czas lokalny — na Teneryfie jest wtedy godzina wcześniej niż u Was.</p>`},
+      {t:'14:40', tz:'tf', at:'2026-09-03T14:40+01:00', title:'Transfer do hotelu', status:'Jedziemy autokarem do hotelu', place:'tfs',
+       detail:`<p>Około 45 km wzdłuż zachodniego wybrzeża. Autokar zatrzymuje się przy kilku hotelach, więc może to zająć do półtorej godziny.</p>`},
+      {t:'16:00', tz:'tf', at:'2026-09-03T16:00+01:00', title:'Zameldowanie w hotelu', status:'Zameldowanie w hotelu', place:'hotel',
+       detail:`<p>Barceló Santiago w Puerto de Santiago. Hotel stoi na klifie, z pokojów widać ocean i wyspę La Gomera.</p>`},
+      {t:'17:00', tz:'tf', at:'2026-09-03T17:00+01:00', title:'Pierwszy spacer po Los Gigantes', status:'Rozglądamy się po Los Gigantes', place:'hotel',
+       detail:`<ul class="facts">
+       <li>Klify Los Gigantes to pionowe ściany bazaltu wysokie miejscami na <strong>600 metrów</strong> — opadają prosto do oceanu.</li>
+       <li>Guanczowie, rdzenni mieszkańcy wyspy, nazywali je <strong>Murem Piekła</strong> i wierzyli, że za nimi kończy się świat.</li>
+       <li>Ta część wyspy jest starsza niż wulkan Teide — ma od 5 do 7 milionów lat.</li></ul>`},
+      {t:'19:00', tz:'tf', at:'2026-09-03T19:00+01:00', title:'Obiadokolacja', status:'Jemy obiadokolację', place:'hotel'},
+      {t:'21:00', tz:'tf', at:'2026-09-03T21:00+01:00', title:'Wieczór w hotelu', status:'Odpoczywamy po podróży', place:'hotel'},
+      {t:'23:00', tz:'tf', at:'2026-09-03T23:00+01:00', title:'Śpimy', status:'Śpimy', place:'hotel', night:true}
+    ]
+  },
+  {
+    key:'d2', label:'pt', num:'4.09', title:'Plaża i basen',
+    sub:'Dzień na aklimatyzację. Nigdzie nie jedziemy.',
+    items:[
+      {t:'08:30', tz:'tf', at:'2026-09-04T08:30+01:00', title:'Śniadanie', status:'Jemy śniadanie', place:'hotel'},
+      {t:'09:30', tz:'tf', at:'2026-09-04T09:30+01:00', title:'Playa de la Arena', status:'Jesteśmy na plaży', place:'arena',
+       detail:`<p>Plaża kilkanaście minut spacerem od hotelu, z ratownikami i Błękitną Flagą.</p>
+       <ul class="facts">
+       <li>Piasek jest <strong>czarny</strong> — to zmielona przez ocean lawa. Nagrzewa się dużo mocniej niż jasny, więc chodzi się po nim w klapkach.</li>
+       <li>Woda w tej części wyspy ma we wrześniu około 23 stopni.</li></ul>`},
+      {t:'13:30', tz:'tf', at:'2026-09-04T13:30+01:00', title:'Lunch i spacer promenadą', status:'Jemy lunch nad wodą', place:'arena'},
+      {t:'15:30', tz:'tf', at:'2026-09-04T15:30+01:00', title:'Basen w hotelu', status:'Leniuchujemy przy basenie', place:'hotel'},
+      {t:'18:30', tz:'tf', at:'2026-09-04T18:30+01:00', title:'Zamawiamy śniadanie na wynos', status:'Szykujemy się na jutro', place:'hotel',
+       detail:`<p>Jutro wychodzimy przed 8:00, czyli zanim otworzą bufet. Trzeba więc dzień wcześniej poprosić w recepcji o pakiet śniadaniowy do zabrania.</p>`},
+      {t:'19:00', tz:'tf', at:'2026-09-04T19:00+01:00', title:'Obiadokolacja', status:'Jemy obiadokolację', place:'hotel'},
+      {t:'21:30', tz:'tf', at:'2026-09-04T21:30+01:00', title:'Idziemy wcześnie spać', status:'Śpimy przed dniem w Masce', place:'hotel', night:true}
+    ]
+  },
+  {
+    key:'d3', label:'sob', num:'5.09', title:'Wąwóz Masca',
+    sub:'Najważniejszy i najtrudniejszy dzień wyjazdu.',
+    items:[
+      {t:'07:00', tz:'tf', at:'2026-09-05T07:00+01:00', title:'Pobudka', status:'Wstajemy, dziś Masca', place:'hotel'},
+      {t:'08:05', tz:'tf', at:'2026-09-05T08:05+01:00', title:'Autobus do Santiago del Teide', status:'Jedziemy autobusem do Santiago del Teide', place:'santiago',
+       detail:`<p>Linia 325 z przystanku przy poczcie. W sobotę to jedyny poranny kurs, więc wychodzimy z zapasem.</p>`},
+      {t:'08:50', tz:'tf', at:'2026-09-05T08:50+01:00', title:'Autobus 355 do Maski', status:'Jedziemy serpentynami do Maski', place:'masca',
+       detail:`<p>Dwadzieścia minut wąskiej, krętej drogi przez góry Teno. Od zeszłego roku do Maski nie można dojechać własnym autem — wyłącznie tym autobusem, a bilet jest potem sprawdzany przy wejściu na szlak.</p>`},
+      {t:'09:10', tz:'tf', at:'2026-09-05T09:10+01:00', title:'Zwiedzamy wioskę Masca', status:'Chodzimy po wiosce Masca', place:'masca',
+       detail:`<ul class="facts">
+       <li>Masca była <strong>odcięta od świata do lat 70.</strong> XX wieku — nie było tu drogi ani prądu, wszystko znoszono na osłach.</li>
+       <li>Wioska ma status zabytku kultury za samą architekturę i krajobraz.</li>
+       <li>Legenda mówi, że wąwóz służył piratom za kryjówkę — od strony morza wejścia do zatoki praktycznie nie widać.</li></ul>`},
+      {t:'10:30', tz:'tf', at:'2026-09-05T10:30+01:00', title:'Kontrola przed wejściem na szlak', status:'Odbieramy kaski przed szlakiem', place:'masca',
+       detail:`<p>Sprawdzają dowody, bilety, buty i zapas wody, po czym wydają <strong>kaski</strong>. Bez kompletu rzeczy nikogo nie wpuszczają.</p>`},
+      {t:'11:00', tz:'tf', at:'2026-09-05T11:00+01:00', title:'Schodzimy wąwozem Masca', status:'Schodzimy wąwozem Masca', place:'wawoz',
+       detail:`<p>Pięć kilometrów w dół, z 750 metrów prosto do oceanu. Zejście zajmuje od trzech do czterech godzin.</p>
+       <p class="note">W wąwozie nie ma zasięgu i przez kilka godzin się nie odezwiemy — to normalne, nie martwcie się.</p>
+       <ul class="facts">
+       <li>Wąwóz powstawał przez <strong>5 milionów lat</strong>, woda wyżłobiła go w litej skale wulkanicznej.</li>
+       <li>Na szlak wpuszczają tylko 25 osób co pół godziny, w kaskach, a po trasie chodzą patrole i ratownicy.</li>
+       <li>W bilecie jest ubezpieczenie od nieszczęśliwych wypadków, a co kilkaset metrów stoją tabliczki z numerem lokalizacji dla służb.</li></ul>`},
+      {t:'14:30', tz:'tf', at:'2026-09-05T14:30+01:00', title:'Czekamy na łódź w zatoce', status:'Czekamy na łódź w zatoce Masca', place:'zatoka',
+       detail:`<p>Z wąwozu wychodzi się prosto na pomost. Łodzie zabierają po dwanaście osób i ruszają, gdy uzbiera się komplet, więc trochę się czeka.</p>`},
+      {t:'15:15', tz:'tf', at:'2026-09-05T15:15+01:00', title:'Rejs pod klifami do portu', status:'Płyniemy łodzią pod klifami', place:'morze',
+       detail:`<p>Kwadrans rejsu u samego podnóża sześciusetmetrowej ściany.</p>
+       <ul class="facts">
+       <li>W cieśninie między Teneryfą a La Gomerą mieszka na stałe <strong>osiadła populacja grindwali i delfinów butlonosych</strong>. Nie migrują, bo woda ma tam ponad kilometr głębokości tuż przy brzegu.</li>
+       <li>W 2021 roku ten akwen dostał status Whale Heritage Site — pierwszy taki w Europie.</li></ul>`},
+      {t:'16:00', tz:'tf', at:'2026-09-05T16:00+01:00', title:'Wracamy do hotelu', status:'Odsypiamy Mascę', place:'hotel'},
+      {t:'19:00', tz:'tf', at:'2026-09-05T19:00+01:00', title:'Zasłużona obiadokolacja', status:'Jemy zasłużoną obiadokolację', place:'hotel'},
+      {t:'22:00', tz:'tf', at:'2026-09-05T22:00+01:00', title:'Śpimy', status:'Śpimy', place:'hotel', night:true}
+    ]
+  },
+  {
+    key:'d4', label:'nd', num:'6.09', title:'Niedziela na leniwie',
+    sub:'Kościół, basen, sauna. Nigdzie się nie ruszamy.',
+    items:[
+      {t:'08:30', tz:'tf', at:'2026-09-06T08:30+01:00', title:'Śniadanie', status:'Jemy śniadanie', place:'hotel'},
+      {t:'10:00', tz:'tf', at:'2026-09-06T10:00+01:00', title:'Msza', status:'Jesteśmy na mszy', place:'hotel',
+       detail:`<p>Parafia Ducha Świętego przy Plaza de la Buganvilla, kilka minut od hotelu. Dokładną godzinę sprawdzimy na miejscu — hiszpańskie parafie zmieniają je latem.</p>`},
+      {t:'11:30', tz:'tf', at:'2026-09-06T11:30+01:00', title:'Basen i leżakowanie', status:'Leżymy przy basenie', place:'hotel'},
+      {t:'14:00', tz:'tf', at:'2026-09-06T14:00+01:00', title:'Lunch', status:'Jemy lunch', place:'hotel'},
+      {t:'16:00', tz:'tf', at:'2026-09-06T16:00+01:00', title:'Sauna i strefa wodna', status:'Jesteśmy w saunie', place:'hotel',
+       detail:`<p>Hotelowe spa: sauna, łaźnia turecka, jacuzzi i baseny z hydromasażem. Płatne osobno.</p>`},
+      {t:'18:30', tz:'tf', at:'2026-09-06T18:30+01:00', title:'Spacer na zachód słońca', status:'Oglądamy zachód słońca', place:'hotel',
+       detail:`<ul class="facts">
+       <li>Słońce zachodzi około <strong>20:20</strong> i chowa się dokładnie za wyspą La Gomera — to jej widać stąd sylwetkę na horyzoncie.</li>
+       <li>Na La Gomerze do dziś używa się gwizdanego języka silbo gomero, którym pasterze porozumiewali się przez wąwozy. Jest na liście UNESCO.</li></ul>`},
+      {t:'19:30', tz:'tf', at:'2026-09-06T19:30+01:00', title:'Obiadokolacja', status:'Jemy obiadokolację', place:'hotel'},
+      {t:'22:30', tz:'tf', at:'2026-09-06T22:30+01:00', title:'Śpimy', status:'Śpimy', place:'hotel', night:true}
+    ]
+  },
+  {
+    key:'d5', label:'pon', num:'7.09', title:'La Laguna i góry Anaga',
+    sub:'Cały dzień autem po drugiej stronie wyspy.',
+    items:[
+      {t:'08:00', tz:'tf', at:'2026-09-07T08:00+01:00', title:'Śniadanie', status:'Jemy śniadanie', place:'hotel'},
+      {t:'09:00', tz:'tf', at:'2026-09-07T09:00+01:00', title:'Odbieramy wynajęte auto', status:'Odbieramy auto', place:'hotel'},
+      {t:'09:30', tz:'tf', at:'2026-09-07T09:30+01:00', title:'Jedziemy na drugi koniec wyspy', status:'Jedziemy do La Laguny', place:'laguna',
+       detail:`<p>Około 100 km autostradą wzdłuż wybrzeża, jakieś półtorej godziny.</p>`},
+      {t:'11:00', tz:'tf', at:'2026-09-07T11:00+01:00', title:'La Laguna', status:'Zwiedzamy La Lagunę', place:'laguna',
+       detail:`<ul class="facts">
+       <li>Stare miasto jest na liście <strong>UNESCO</strong> od 1999 roku.</li>
+       <li>To pierwsze nieufortyfikowane miasto kolonialne zbudowane na planie szachownicy — ten układ posłużył potem za wzór dla miast Ameryki Łacińskiej, między innymi Hawany i Limy.</li>
+       <li>Mieści się tu najstarszy uniwersytet Wysp Kanaryjskich, więc miasto jest pełne studentów i kawiarni.</li></ul>`},
+      {t:'13:20', tz:'tf', at:'2026-09-07T13:20+01:00', title:'Szlak zmysłów w Anadze', status:'Spacerujemy po lesie w Anadze', place:'anaga',
+       detail:`<p>Sendero de los Sentidos przy Cruz del Carmen — trzy krótkie pętle zaprojektowane tak, by przechodzić je zwracając uwagę na zapach i dźwięki lasu, nie tylko na widoki.</p>
+       <ul class="facts">
+       <li>Rosnący tu las wawrzynowy to <strong>żywa skamielina</strong>. Takie lasy pokrywały basen Morza Śródziemnego kilka milionów lat temu i wyginęły wszędzie poza tymi wyspami.</li>
+       <li>Anaga jest rezerwatem biosfery UNESCO i ma jedno z największych zagęszczeń gatunków endemicznych w Europie.</li></ul>`},
+      {t:'15:00', tz:'tf', at:'2026-09-07T15:00+01:00', title:'Szlak na Roque de Taborno', status:'Idziemy na Roque de Taborno', place:'taborno',
+       detail:`<p>Dwie, dwie i pół godziny w obie strony, z widokiem na cały masyw Anaga.</p>
+       <ul class="facts"><li>Tę ostrą skalną iglicę nazywają <strong>Matterhornem Teneryfy</strong>.</li>
+       <li>Droga do wioski Taborno to wąska grań z przepaściami po obu stronach — jedna z najbardziej efektownych dróg na wyspie.</li></ul>`},
+      {t:'18:15', tz:'tf', at:'2026-09-07T18:15+01:00', title:'Playa de las Teresitas', status:'Jesteśmy na plaży Las Teresitas', place:'teresitas',
+       detail:`<ul class="facts">
+       <li>Ta plaża jest <strong>sztuczna</strong>. W latach 70. sprowadzono tu statkami złoty piasek z Sahary i usypano falochron, bo naturalna plaża była czarna i niebezpieczna.</li>
+       <li>To jedna z niewielu jasnych plaż na wyspie — i cała jest importowana z Afryki.</li></ul>`},
+      {t:'20:00', tz:'tf', at:'2026-09-07T20:00+01:00', title:'Droga powrotna', status:'Wracamy przez całą wyspę', place:'hotel',
+       detail:`<p>Półtorej godziny drogi. Wrócimy późno, ale kolację w hotelu wydają do 22:00.</p>`},
+      {t:'22:30', tz:'tf', at:'2026-09-07T22:30+01:00', title:'Śpimy', status:'Śpimy', place:'hotel', night:true}
+    ]
+  },
+  {
+    key:'d6', label:'wt', num:'8.09', title:'Wulkan Teide',
+    sub:'Park narodowy, dwa krótkie szlaki, wieczorem oddajemy auto.',
+    items:[
+      {t:'08:00', tz:'tf', at:'2026-09-08T08:00+01:00', title:'Śniadanie', status:'Jemy śniadanie', place:'hotel'},
+      {t:'10:00', tz:'tf', at:'2026-09-08T10:00+01:00', title:'Jedziemy w górę do parku', status:'Wjeżdżamy do parku Teide', place:'samara',
+       detail:`<p>Droga wspina się z poziomu morza na ponad 2000 metrów w niecałą godzinę. Na górze bywa nawet 15 stopni chłodniej niż nad wodą, więc bierzemy bluzy.</p>`},
+      {t:'11:00', tz:'tf', at:'2026-09-08T11:00+01:00', title:'Szlak wokół wulkanu Samara', status:'Idziemy szlakiem przy wulkanie Samara', place:'samara',
+       detail:`<p>Pętla około pięciu kilometrów po czarnym piasku wulkanicznym, z widokiem na Teide i Pico Viejo.</p>
+       <ul class="facts"><li>Krajobraz jest tu tak księżycowy, że NASA testowała w tej okolicy łaziki marsjańskie — skały i grunt przypominają te z Marsa.</li></ul>`},
+      {t:'14:30', tz:'tf', at:'2026-09-08T14:30+01:00', title:'Przejazd pod Roques de García', status:'Jedziemy pod Roques de García', place:'roques'},
+      {t:'15:15', tz:'tf', at:'2026-09-08T15:15+01:00', title:'Szlak Roques de García', status:'Idziemy szlakiem Roques de García', place:'roques',
+       detail:`<p>Pętla 3,5 km wśród skalnych formacji, u stóp samego Teide.</p>
+       <ul class="facts">
+       <li>Skała <strong>Roque Cinchado</strong> była przez lata na hiszpańskim banknocie tysiąca peset.</li>
+       <li>Teide ma 3715 metrów, ale liczony od dna oceanu — ponad 7500. To trzecia najwyższa struktura wulkaniczna na świecie.</li>
+       <li>Według wierzeń Guanczów we wnętrzu góry mieszkał demon Guayota, który porwał boga słońca i uwięził go w kraterze. Biały stożek Teide to według legendy korek, którym go zatkano.</li>
+       <li>Ostatnia erupcja na wyspie to wulkan Chinyero w 1909 roku — kilka kilometrów od naszego hotelu.</li></ul>`},
+      {t:'17:15', tz:'tf', at:'2026-09-08T17:15+01:00', title:'Zjeżdżamy do hotelu', status:'Wracamy z gór', place:'hotel'},
+      {t:'18:30', tz:'tf', at:'2026-09-08T18:30+01:00', title:'Oddajemy auto', status:'Oddajemy auto', place:'hotel'},
+      {t:'19:30', tz:'tf', at:'2026-09-08T19:30+01:00', title:'Obiadokolacja', status:'Jemy obiadokolację', place:'hotel'},
+      {t:'22:30', tz:'tf', at:'2026-09-08T22:30+01:00', title:'Śpimy', status:'Śpimy', place:'hotel', night:true}
+    ]
+  },
+  {
+    key:'d7', label:'śr', num:'9.09', title:'Dzień bez planu',
+    sub:'Zostawiliśmy go wolny. Zdecydujemy rano.',
+    items:[
+      {t:'08:30', tz:'tf', at:'2026-09-09T08:30+01:00', title:'Śniadanie', status:'Jemy śniadanie', place:'hotel'},
+      {t:'10:00', tz:'tf', at:'2026-09-09T10:00+01:00', title:'Improwizujemy', status:'Improwizujemy ostatni dzień', place:'hotel',
+       detail:`<p>Kilka rzeczy, z których będziemy wybierać:</p>
+       <ul class="facts">
+       <li>rejs na wieloryby i delfiny z portu w Los Gigantes,</li>
+       <li>kajaki pod ścianę klifu,</li>
+       <li>wyjazd do Garachico i Icod — rośnie tam smocze drzewo liczące podobno tysiąc lat,</li>
+       <li>albo po prostu basen i nic więcej.</li></ul>`},
+      {t:'19:00', tz:'tf', at:'2026-09-09T19:00+01:00', title:'Ostatnia obiadokolacja', status:'Ostatnia kolacja na wyspie', place:'hotel'},
+      {t:'21:00', tz:'tf', at:'2026-09-09T21:00+01:00', title:'Pakujemy się', status:'Pakujemy walizki', place:'hotel'},
+      {t:'23:00', tz:'tf', at:'2026-09-09T23:00+01:00', title:'Śpimy', status:'Śpimy', place:'hotel', night:true}
+    ]
+  },
+  {
+    key:'d8', label:'czw', num:'10.09', title:'Wracamy do domu',
+    sub:'Cały dzień w drodze. W nocy powinniśmy być na miejscu.',
+    items:[
+      {t:'08:00', tz:'tf', at:'2026-09-10T08:00+01:00', title:'Ostatnie śniadanie', status:'Jemy ostatnie śniadanie', place:'hotel'},
+      {t:'10:00', tz:'tf', at:'2026-09-10T10:00+01:00', title:'Wymeldowanie', status:'Wymeldowujemy się', place:'hotel'},
+      {t:'11:00', tz:'tf', at:'2026-09-10T11:00+01:00', title:'Transfer na lotnisko', status:'Jedziemy na lotnisko', place:'tfs',
+       detail:`<p>Dokładną godzinę poda rezydent dzień wcześniej — może się przesunąć o godzinę w każdą stronę.</p>`},
+      {t:'14:30', tz:'tf', at:'2026-09-10T14:30+01:00', title:'Wylot z Teneryfy', status:'Lecimy do domu', place:'samolot',
+       detail:`<p>Rejs <strong>ENT5602</strong>. W drodze powrotnej lot jest zwykle nieco krótszy.</p>`},
+      {t:'21:15', tz:'pl', at:'2026-09-10T21:15+02:00', title:'Lądujemy w Warszawie', status:'Wylądowaliśmy w Warszawie', place:'lotniskoPL',
+       detail:`<p>Godzina orientacyjna. Damy znać, jak tylko wylądujemy.</p>`},
+      {t:'22:30', tz:'pl', at:'2026-09-10T22:30+02:00', title:'Odbieramy auto z parkingu', status:'Odbieramy auto i jedziemy do domu', place:'lotniskoPL'},
+      {t:'23:59', tz:'pl', at:'2026-09-11T00:00+02:00', title:'Jesteśmy w domu', status:'Jesteśmy w domu', place:'dom', night:true}
+    ]
+  }
+];
+
+/* ============ CZAS ============ */
+const params = new URLSearchParams(location.search);
+const override = params.get('t') ? new Date(params.get('t')) : null;
+const now = () => override || new Date();
+
+const ALL = [];
+DAYS.forEach((d,di)=>d.items.forEach((it,ii)=>ALL.push(Object.assign({},it,{di,ii,date:new Date(it.at)}))));
+ALL.sort((a,b)=>a.date-b.date);
+
+function timeIn(tz,d){
+  return new Intl.DateTimeFormat('pl-PL',{hour:'2-digit',minute:'2-digit',timeZone:tz}).format(d);
+}
+function currentIndex(){
+  const n=now();
+  if(n<ALL[0].date) return -1;
+  let idx=0;
+  for(let i=0;i<ALL.length;i++){ if(ALL[i].date<=n) idx=i; }
+  const last=ALL[ALL.length-1];
+  if(n>new Date(last.date.getTime()+6*3600e3)) return -2;
+  return idx;
+}
+function untilText(ms){
+  const d=Math.floor(ms/86400e3), h=Math.floor(ms%86400e3/3600e3), m=Math.floor(ms%3600e3/60e3);
+  const dd = d===1?'1 dzień':d>1?`${d} dni`:'';
+  const hh = h===1?'1 godzina':(h>1&&h<5)?`${h} godziny`:h>0?`${h} godzin`:'';
+  if(d>0) return `${dd} i ${hh||'chwilę'}`;
+  if(h>0) return `${hh} ${m} min`;
+  return `${m} min`;
+}
+
+/* ============ MAPA ============ */
+const COAST=[[28.343,-16.921],[28.375,-16.861],[28.378,-16.762],[28.375,-16.717],[28.408,-16.640],
+[28.424,-16.548],[28.480,-16.400],[28.552,-16.354],[28.573,-16.319],[28.573,-16.185],[28.567,-16.135],
+[28.512,-16.190],[28.463,-16.245],[28.353,-16.372],[28.300,-16.380],[28.163,-16.428],[28.020,-16.540],
+[28.020,-16.580],[28.000,-16.650],[28.048,-16.717],[28.088,-16.740],[28.147,-16.792],[28.180,-16.820],
+[28.243,-16.844],[28.300,-16.880]];
+const LON0=-16.955,LON1=-16.085,LAT0=27.975,LAT1=28.615,MW=340,MH=283;
+const px = (lat,lon)=>[ (lon-LON0)/(LON1-LON0)*MW, (LAT1-lat)/(LAT1-LAT0)*MH ];
+
+function drawMap(){
+  const pts=COAST.map(c=>px(c[0],c[1]).map(v=>v.toFixed(1)).join(',')).join(' ');
+  const teide=px(28.272,-16.642), hot=px(28.238,-16.840);
+  document.getElementById('island').innerHTML=`
+    <polygon class="coast" points="${pts}"/>
+    <g opacity=".85">
+      <path d="M${teide[0]-9},${teide[1]+7} L${teide[0]},${teide[1]-8} L${teide[0]+9},${teide[1]+7} Z" fill="#CFDCD3"/>
+      <text class="pinlabel" x="${teide[0]}" y="${teide[1]+21}" text-anchor="middle">Teide</text>
+      <circle cx="${hot[0]}" cy="${hot[1]}" r="3.5" fill="#0E6B78"/>
+      <text class="pinlabel" x="${hot[0]-7}" y="${hot[1]+4}" text-anchor="end" fill="#0E6B78">hotel</text>
+    </g>
+    <g class="here" id="here" style="display:none">
+      <circle class="halo" r="16"/><circle class="core" r="7"/>
+      <text class="herelabel" y="-24" text-anchor="middle"></text>
+    </g>`;
+}
+function setMarker(placeKey){
+  const g=document.getElementById('here'), cap=document.getElementById('mapCaption');
+  const p=placeKey?PLACES[placeKey]:null;
+  if(!p){
+    g.style.display='none';
+    cap.textContent = placeKey==='samolot' ? 'W powietrzu, gdzieś nad Atlantykiem.'
+      : placeKey==='dom'||placeKey==='lotniskoPL' ? 'Jeszcze w Polsce.' : 'Poza wyspą.';
+    return;
+  }
+  const [x,y]=px(p.lat,p.lon);
+  g.style.display='';
+  g.setAttribute('transform',`translate(${x.toFixed(1)},${y.toFixed(1)})`);
+  const label=g.querySelector('text');
+  label.textContent=p.name;
+  label.setAttribute('x',0);
+  label.setAttribute('y', y<50?30:-24);
+  const anchor = x<70?'start':x>270?'end':'middle';
+  label.setAttribute('text-anchor',anchor);
+  label.setAttribute('x', anchor==='start'?-6:anchor==='end'?6:0);
+  cap.textContent=p.name;
+}
+
+/* ============ RENDER ============ */
+let selectedDay=0, pinnedPlace=null;
+
+function renderChips(){
+  const nav=document.getElementById('days');
+  nav.innerHTML='';
+  const ci=currentIndex();
+  DAYS.forEach((d,i)=>{
+    const b=document.createElement('button');
+    b.className='chip'+(ci>=0&&ALL[ci].di===i?' is-today':'');
+    b.type='button'; b.setAttribute('role','tab');
+    b.setAttribute('aria-selected', i===selectedDay?'true':'false');
+    b.innerHTML=`${d.label} <small>${d.num}</small>`;
+    b.onclick=()=>{selectedDay=i;pinnedPlace=null;renderChips();renderDay();window.scrollTo({top:0,behavior:'smooth'})};
+    nav.appendChild(b);
+  });
+  const active=nav.children[selectedDay];
+  if(active) nav.scrollTo({left:active.offsetLeft-90,behavior:'smooth'});
+}
+
+function renderDay(){
+  const d=DAYS[selectedDay], ci=currentIndex();
+  document.getElementById('dayTitle').textContent=d.title;
+  document.getElementById('daySub').textContent=d.sub;
+  const list=document.getElementById('list');
+  list.innerHTML='';
+  d.items.forEach((it,ii)=>{
+    const gi=ALL.findIndex(a=>a.di===selectedDay&&a.ii===ii);
+    const isCur = ci>=0 && gi===ci;
+    const isPast= ci>=0 && gi<ci;
+    const art=document.createElement('article');
+    art.className='item'+(isCur?' current':'')+(isPast?' past':'')+(it.night?' night':'');
+    const inner=`
+      <div class="time">${it.t}<small>${it.tz==='pl'?'w PL':'na wyspie'}</small></div>
+      <div class="body">
+        <p class="title">${it.title}${isCur?'<span class="badge">teraz</span>':''}</p>
+        ${it.detail?`<span class="tap">Ciekawostki i szczegóły
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span>`:''}
+      </div>`;
+    if(it.detail){
+      const btn=document.createElement('button');
+      btn.className='row'; btn.type='button';
+      btn.setAttribute('aria-expanded','false');
+      btn.innerHTML=inner;
+      const det=document.createElement('div');
+      det.className='detail'; det.hidden=true; det.innerHTML=it.detail;
+      btn.onclick=()=>{
+        const open=btn.getAttribute('aria-expanded')==='true';
+        btn.setAttribute('aria-expanded',String(!open));
+        det.hidden=open;
+        if(!open){ pinnedPlace=it.place; setMarker(it.place); }
+        else { pinnedPlace=null; syncNow(); }
+      };
+      art.appendChild(btn); art.appendChild(det);
+    } else {
+      const div=document.createElement('div');
+      div.className='row'; div.innerHTML=inner;
+      art.appendChild(div);
+    }
+    list.appendChild(art);
+  });
+}
+
+function syncNow(){
+  const n=now(), ci=currentIndex();
+  document.getElementById('clockTF').textContent=timeIn('Atlantic/Canary',n);
+  document.getElementById('clockPL').textContent=timeIn('Europe/Warsaw',n);
+  const S=document.getElementById('nowStatus'), U=document.getElementById('nowSub'),
+        L=document.getElementById('nowLabel'), B=document.getElementById('nowBar');
+
+  if(ci===-1){
+    L.textContent='Jeszcze w Polsce';
+    S.textContent='Odliczamy do wylotu';
+    U.innerHTML=`Zostało <b>${untilText(ALL[0].date-n)}</b>. Wylot w czwartek o 8:40.`;
+    B.style.width='0%';
+    if(!pinnedPlace) setMarker('dom');
+    return;
+  }
+  if(ci===-2){
+    L.textContent='Po wyjeździe';
+    S.textContent='Jesteśmy już w domu';
+    U.textContent='Wyjazd zakończony. Plan zostaje na pamiątkę.';
+    B.style.width='100%';
+    if(!pinnedPlace) setMarker('dom');
+    return;
+  }
+  const cur=ALL[ci], nxt=ALL[ci+1];
+  L.textContent='Teraz';
+  S.textContent=cur.status;
+  if(nxt){
+    const tz = nxt.tz==='pl'?'czasu polskiego':'';
+    U.innerHTML=`Potem: <b>${nxt.t}</b> ${nxt.title.charAt(0).toLowerCase()+nxt.title.slice(1)} ${tz}`;
+    const span=nxt.date-cur.date, done=n-cur.date;
+    B.style.width=Math.max(2,Math.min(100,done/span*100)).toFixed(0)+'%';
+  } else { U.textContent='Ostatni punkt planu.'; B.style.width='100%'; }
+  if(!pinnedPlace) setMarker(cur.place);
+}
+
+function goToNow(){
+  const ci=currentIndex();
+  selectedDay = ci>=0 ? ALL[ci].di : 0;
+  pinnedPlace=null;
+  renderChips(); renderDay(); syncNow();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function measure(){
+  document.documentElement.style.setProperty('--now-h',document.getElementById('now').offsetHeight+'px');
+}
+
+drawMap();
+const ci0=currentIndex();
+selectedDay = ci0>=0 ? ALL[ci0].di : 0;
+renderChips(); renderDay(); syncNow(); measure();
+setInterval(syncNow,20000);
+window.addEventListener('resize',measure);
+
+const jump=document.getElementById('jump');
+setInterval(()=>{
+  const ci=currentIndex();
+  const off = ci>=0 && ALL[ci].di!==selectedDay;
+  jump.classList.toggle('show',off);
+},1000);
+jump.onclick=goToNow;
+</script>
+</body>
+</html>
