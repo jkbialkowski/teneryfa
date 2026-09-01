@@ -82,15 +82,29 @@ body{
 .chip{position:relative}
 
 /* ---------- MAP ---------- */
-.mapcard{background:var(--paper);padding:16px 18px 14px;border-bottom:1px solid var(--line)}
+.mapcard{background:var(--paper);padding:16px 18px 14px;border-bottom:1px solid var(--line);scroll-margin-top:10px}
+.maphead{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
 .mapcard h2{margin:0 0 2px;font-size:15px;font-weight:700}
 .mapcard p{margin:0 0 10px;font-size:13.5px;color:var(--ink-soft)}
+.backnow{
+  flex:none;display:none;align-items:center;gap:6px;border:0;cursor:pointer;
+  background:var(--ink);color:#fff;border-radius:99px;padding:7px 13px;
+  font:inherit;font-size:13px;font-weight:700;
+}
+.backnow.show{display:inline-flex}
 svg.island{width:100%;height:auto;display:block;max-height:230px}
 .coast{fill:#EAF0EC;stroke:#CFDCD3;stroke-width:1.5;stroke-linejoin:round}
 .pinlabel{font-size:10.5px;font-weight:600;fill:var(--ink-faint)}
 .here circle.halo{fill:var(--lava);opacity:.22}
 .here circle.core{fill:var(--lava);stroke:#fff;stroke-width:2.5}
+.here.preview circle.halo{fill:var(--sea);opacity:.18}
+.here.preview circle.core{fill:var(--sea)}
 .herelabel{font-size:12px;font-weight:800;fill:var(--ink)}
+.showmap{
+  display:inline-flex;align-items:center;gap:7px;margin-top:4px;cursor:pointer;
+  background:var(--paper);border:1px solid var(--line);border-radius:99px;
+  padding:9px 15px;font:inherit;font-size:14px;font-weight:700;color:var(--sea);
+}
 
 /* ---------- DAY HEADER ---------- */
 .dayhead{padding:22px 18px 6px}
@@ -133,13 +147,7 @@ button.row[aria-expanded="true"] .tap svg{transform:rotate(180deg)}
 .note{background:var(--sand);border-radius:var(--r-md);padding:11px 13px;margin:12px 0 0;font-size:14.5px;color:#6B4A2E}
 
 /* ---------- FOOTER ---------- */
-.info{margin:0 14px 30px;background:var(--paper);border:1px solid var(--line);border-radius:var(--r-lg);padding:18px}
-.info h2{margin:0 0 12px;font-size:18px;font-weight:800;letter-spacing:-.02em}
-.info dl{margin:0;display:grid;grid-template-columns:auto 1fr;gap:9px 14px;font-size:15px}
-.info dt{color:var(--ink-faint);font-weight:600;font-size:13.5px;padding-top:2px}
-.info dd{margin:0}
-.info a{color:var(--sea);font-weight:600}
-.sig{text-align:center;padding:0 18px 40px;font-size:13.5px;color:var(--ink-faint)}
+.sig{text-align:center;padding:8px 18px 44px;font-size:13.5px;color:var(--ink-faint)}
 
 .jump{
   position:fixed;left:50%;transform:translateX(-50%);bottom:calc(18px + env(safe-area-inset-bottom));
@@ -177,9 +185,17 @@ button.row[aria-expanded="true"] .tap svg{transform:rotate(180deg)}
 
   <nav class="days" id="days" aria-label="Dni wyjazdu"></nav>
 
-  <section class="mapcard" aria-labelledby="mapTitle">
-    <h2 id="mapTitle">Gdzie jesteśmy</h2>
-    <p id="mapCaption">—</p>
+  <section class="mapcard" id="mapcard" aria-labelledby="mapTitle">
+    <div class="maphead">
+      <div>
+        <h2 id="mapTitle">Gdzie jesteśmy</h2>
+        <p id="mapCaption">—</p>
+      </div>
+      <button class="backnow" id="backnow" type="button">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M15 18l-6-6 6-6"/></svg>
+        Teraz
+      </button>
+    </div>
     <svg class="island" id="island" viewBox="0 0 340 283" role="img" aria-labelledby="mapTitle"></svg>
   </section>
 
@@ -194,22 +210,6 @@ button.row[aria-expanded="true"] .tap svg{transform:rotate(180deg)}
   </div>
 
   <main class="list" id="list"></main>
-
-  <section class="info">
-    <h2>Gdyby coś</h2>
-    <dl>
-      <dt>Hotel</dt>
-      <dd>Barceló Santiago – Adults Only<br>Puerto de Santiago (Los Gigantes), Teneryfa</dd>
-      <dt>Rezydent Itaki</dt>
-      <dd>numer podamy po przylocie</dd>
-      <dt>Nasze numery</dt>
-      <dd>te same co zwykle — na Kanarach działają bez dopłat, to Unia</dd>
-      <dt>Alarmowy</dt>
-      <dd><a href="tel:112">112</a> — działa w całej Hiszpanii</dd>
-      <dt>Różnica czasu</dt>
-      <dd>Na Teneryfie jest godzinę wcześniej niż w Polsce</dd>
-    </dl>
-  </section>
 
   <p class="sig">Plan może się trochę zmienić — piszemy, gdyby coś.</p>
 </div>
@@ -487,9 +487,13 @@ function drawMap(){
       <text class="herelabel" y="-24" text-anchor="middle"></text>
     </g>`;
 }
-function setMarker(placeKey){
-  const g=document.getElementById('here'), cap=document.getElementById('mapCaption');
+function setMarker(placeKey,preview){
+  const g=document.getElementById('here'), cap=document.getElementById('mapCaption'),
+        ttl=document.getElementById('mapTitle'), back=document.getElementById('backnow');
   const p=placeKey?PLACES[placeKey]:null;
+  ttl.textContent = preview ? 'Podgląd punktu planu' : 'Gdzie jesteśmy';
+  back.classList.toggle('show',!!preview);
+  g.classList.toggle('preview',!!preview);
   if(!p){
     g.style.display='none';
     cap.textContent = placeKey==='samolot' ? 'W powietrzu, gdzieś nad Atlantykiem.'
@@ -501,12 +505,11 @@ function setMarker(placeKey){
   g.setAttribute('transform',`translate(${x.toFixed(1)},${y.toFixed(1)})`);
   const label=g.querySelector('text');
   label.textContent=p.name;
-  label.setAttribute('x',0);
   label.setAttribute('y', y<50?30:-24);
   const anchor = x<70?'start':x>270?'end':'middle';
   label.setAttribute('text-anchor',anchor);
   label.setAttribute('x', anchor==='start'?-6:anchor==='end'?6:0);
-  cap.textContent=p.name;
+  cap.textContent = preview ? p.name+' — to nie jest nasza obecna pozycja' : p.name;
 }
 
 /* ============ RENDER ============ */
@@ -555,12 +558,17 @@ function renderDay(){
       btn.innerHTML=inner;
       const det=document.createElement('div');
       det.className='detail'; det.hidden=true; det.innerHTML=it.detail;
+      if(it.place && PLACES[it.place]){
+        const mb=document.createElement('button');
+        mb.className='showmap'; mb.type='button';
+        mb.innerHTML='<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s7-6.4 7-11a7 7 0 1 0-14 0c0 4.6 7 11 7 11z"/><circle cx="12" cy="10" r="2.6"/></svg> Pokaż na mapie';
+        mb.onclick=()=>showOnMap(it.place);
+        det.appendChild(mb);
+      }
       btn.onclick=()=>{
         const open=btn.getAttribute('aria-expanded')==='true';
         btn.setAttribute('aria-expanded',String(!open));
         det.hidden=open;
-        if(!open){ pinnedPlace=it.place; setMarker(it.place); }
-        else { pinnedPlace=null; syncNow(); }
       };
       art.appendChild(btn); art.appendChild(det);
     } else {
@@ -607,6 +615,14 @@ function syncNow(){
   if(!pinnedPlace) setMarker(cur.place);
 }
 
+function showOnMap(place){
+  pinnedPlace=place;
+  setMarker(place,true);
+  const offset=document.getElementById('now').offsetHeight+document.getElementById('days').offsetHeight+6;
+  const top=document.getElementById('mapcard').getBoundingClientRect().top+window.scrollY-offset;
+  window.scrollTo({top:Math.max(0,top),behavior:'smooth'});
+}
+
 function goToNow(){
   const ci=currentIndex();
   selectedDay = ci>=0 ? ALL[ci].di : 0;
@@ -633,6 +649,8 @@ setInterval(()=>{
   jump.classList.toggle('show',off);
 },1000);
 jump.onclick=goToNow;
+
+document.getElementById('backnow').onclick=()=>{ pinnedPlace=null; syncNow(); };
 </script>
 </body>
 </html>
